@@ -2,3 +2,8 @@
 
 Модульный монолит состоит из first-module и second-module.
 У каждого из них - свой datasource.
+
+У каждого модуля есть собственная мета-аннотация над @Transactional c прописанным дефолтным transactionManager.
+В остальном мета-аннотация должна работать идентично оригиналу.
+
+Параметры hibernate прописывать в бин *EntityManagerFactoryBuilder.
