@@ -4,3 +4,6 @@ spring:
       url: jdbc:postgresql://localhost:5432/second_module
       username: postgres
       password: postgres
+  liquibase:
+    second:
+      change-log: classpath:db/changelog/db.changelog-second-master.yaml

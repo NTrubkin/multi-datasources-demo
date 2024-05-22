@@ -1,7 +1,9 @@
 package ru.ntrubkin.multi.datasources.demo.second.module;
 
+import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +44,7 @@ public class SecondConfig {
     public EntityManagerFactoryBuilder secondEntityManagerFactoryBuilder() {
         return new EntityManagerFactoryBuilder(
                 new HibernateJpaVendorAdapter(),
-                Map.of("hibernate.hbm2ddl.auto", "create"),
+                Map.of("hibernate.hbm2ddl.auto", "validate"),
                 null
         );
 
@@ -62,5 +64,26 @@ public class SecondConfig {
     public PlatformTransactionManager secondTransactionManager(
             @Qualifier("secondEntityManagerFactory") LocalContainerEntityManagerFactoryBean entityManagerFactory) {
         return new JpaTransactionManager(Objects.requireNonNull(entityManagerFactory.getObject()));
+    }
+
+    @Bean
+    @ConfigurationProperties("spring.liquibase.second")
+    public LiquibaseProperties secondLiquibaseProperties() {
+        return new LiquibaseProperties();
+    }
+
+    @Bean
+    public SpringLiquibase secondLiquibase(
+            @Qualifier("secondLiquibaseProperties") LiquibaseProperties properties
+    ) {
+        var liquibase = new SpringLiquibase();
+        liquibase.setDataSource(secondDataSource());
+        liquibase.setChangeLog(properties.getChangeLog());
+        liquibase.setContexts(properties.getContexts());
+        liquibase.setDefaultSchema(properties.getDefaultSchema());
+        liquibase.setDropFirst(properties.isDropFirst());
+        liquibase.setChangeLogParameters(properties.getParameters());
+        liquibase.setRollbackFile(properties.getRollbackFile());
+        return liquibase;
     }
 }

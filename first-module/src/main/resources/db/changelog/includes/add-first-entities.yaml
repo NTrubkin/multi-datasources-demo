@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-first-entities
+      author: ntrubkin
+      changes:
+        - createTable:
+            tableName: first_entities
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    primaryKeyName: second_entities_pk

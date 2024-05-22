@@ -1,7 +1,11 @@
 package ru.ntrubkin.multi.datasources.demo.first.module;
 
+import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +27,7 @@ import java.util.Objects;
         entityManagerFactoryRef = "firstEntityManagerFactory",
         transactionManagerRef = "firstTransactionManager"
 )
+@EnableAutoConfiguration(exclude = LiquibaseAutoConfiguration.class)
 public class FirstConfig {
 
     @Bean
@@ -42,7 +47,7 @@ public class FirstConfig {
     public EntityManagerFactoryBuilder firstEntityManagerFactoryBuilder() {
         return new EntityManagerFactoryBuilder(
                 new HibernateJpaVendorAdapter(),
-                Map.of("hibernate.hbm2ddl.auto", "create"),
+                Map.of("hibernate.hbm2ddl.auto", "validate"),
                 null
         );
     }
@@ -61,5 +66,26 @@ public class FirstConfig {
     public PlatformTransactionManager firstTransactionManager(
             @Qualifier("firstEntityManagerFactory") LocalContainerEntityManagerFactoryBean entityManagerFactory) {
         return new JpaTransactionManager(Objects.requireNonNull(entityManagerFactory.getObject()));
+    }
+
+    @Bean
+    @ConfigurationProperties("spring.liquibase.first")
+    public LiquibaseProperties firstLiquibaseProperties() {
+        return new LiquibaseProperties();
+    }
+
+    @Bean
+    public SpringLiquibase firstLiquibase(
+            @Qualifier("firstLiquibaseProperties") LiquibaseProperties properties
+    ) {
+        var liquibase = new SpringLiquibase();
+        liquibase.setDataSource(firstDataSource());
+        liquibase.setChangeLog(properties.getChangeLog());
+        liquibase.setContexts(properties.getContexts());
+        liquibase.setDefaultSchema(properties.getDefaultSchema());
+        liquibase.setDropFirst(properties.isDropFirst());
+        liquibase.setChangeLogParameters(properties.getParameters());
+        liquibase.setRollbackFile(properties.getRollbackFile());
+        return liquibase;
     }
 }

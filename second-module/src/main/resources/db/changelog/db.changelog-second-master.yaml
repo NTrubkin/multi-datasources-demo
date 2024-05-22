@@ -1,0 +1,3 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/includes/add-second-entities.yaml

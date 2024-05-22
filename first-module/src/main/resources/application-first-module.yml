@@ -4,7 +4,6 @@ spring:
       url: jdbc:postgresql://localhost:5432/first_module
       username: postgres
       password: postgres
-#    second:
-#      url: jdbc:postgresql://localhost:5432/second_module
-#      username: postgres
-#      password: postgres
+  liquibase:
+    first:
+      change-log: classpath:db/changelog/db.changelog-first-master.yaml
