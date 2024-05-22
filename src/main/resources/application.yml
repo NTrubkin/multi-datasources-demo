@@ -1,0 +1,3 @@
+spring:
+  profiles:
+    include: first-module, second-module
