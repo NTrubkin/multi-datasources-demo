@@ -1,6 +1,6 @@
 # multi-datasources-demo
 
-Модульный монолит состоит из first-module и second-module.
+Модульный Spring-based монолит состоит из first-module и second-module.
 У каждого из них - свой datasource.
 
 У каждого модуля есть собственная мета-аннотация над @Transactional c прописанным дефолтным transactionManager.
